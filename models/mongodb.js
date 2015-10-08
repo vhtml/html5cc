@@ -1,3 +1,4 @@
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost//html5cc');
+var config = require('../config');
+mongoose.connect(config.dbUrl);
 exports.mongoose = mongoose;

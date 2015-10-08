@@ -6,12 +6,19 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "bcrypt": "^0.8.5",
     "body-parser": "~1.13.1",
+    "connect-mongo": "^0.8.2",
     "cookie-parser": "~1.3.5",
     "debug": "~2.2.0",
     "ejs": "~2.3.2",
     "express": "~4.13.0",
+    "express-session": "^1.11.3",
     "morgan": "~1.6.1",
-    "serve-favicon": "~2.3.0"
+    "serve-favicon": "~2.3.0",
+    "xml2js": "^0.4.12"
+  },
+  "devDependencies": {
+    "mongoose": "^4.1.9"
   }
 }

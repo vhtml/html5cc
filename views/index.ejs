@@ -1,11 +1,26 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-  </body>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>用户登录注册</title>
+	<link rel="stylesheet" href="/static/styles/core.css">
+</head>
+<body>
+
+<form action="/user/register" method="post">
+	<input type="text" name="email" value="">
+	<input type="password" name="password" value="">
+	<input type="text" name="nickname">
+	<input type="submit" value="注册">
+</form>
+<hr>
+<form action="/user/login" method="post">
+	<input type="text" name="email" value="">
+	<input type="password" name="password" value="">
+	<input type="submit" value="登录">
+</form>
+
+<script src="/static/vendor/jquery-2.1.4.min.js"></script>
+<script src="/static/scripts/main.js"></script>
+</body>
 </html>
