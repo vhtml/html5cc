@@ -8,8 +8,37 @@ var RssSchema = new Schema({
 		unique: true,
 		required: true
 	},
-	category: [Schema.Types.Mixed]
+	category: [{
+		title: {
+			type: String,
+			unique: true,
+			required: true,
+			trim: true
+		},
+		alias: {
+			type: String,
+			unique: true,
+			parsed: true,
+			trim: true,
+			lowercase: true
+		},
+		list: [{
+			title: String,
+			rssLink: String
+		}]
+	}]
 });
+
+RssSchema.pre('save', function(next) {
+
+	next();
+});
+
+RssSchema.statics = {
+	findByUserId: function(userId) {
+
+	}
+};
 
 var Rss = new mongoose.model('Rss', RssSchema);
 var RssDAO = function() {};
@@ -31,6 +60,18 @@ RssDAO.prototype.save = function(rssJson, cb) {
 			} else {
 				cb(null, true);
 			}
+		}
+	});
+};
+
+RssDAO.prototype.getRssByUserId = function(userId){
+	Rss.findOne({
+		userId: userId
+	}, function(err, res) {
+		if (err) {
+			cb(err);
+		} else {
+			cb(null, res ? res.category : {});
 		}
 	});
 };
