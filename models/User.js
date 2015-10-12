@@ -1,5 +1,5 @@
-var mongodb = require('./mongodb');
-var Schema = mongodb.mongoose.Schema;
+var mongoose = require('./mongodb').mongoose;
+var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt');
 
 
@@ -81,7 +81,7 @@ UserSchema.methods = {
 	}
 };
 
-var User = mongodb.mongoose.model('User', UserSchema);
+var User = mongoose.model('User', UserSchema);
 var UserDAO = function() {};
 module.exports = new UserDAO();
 
