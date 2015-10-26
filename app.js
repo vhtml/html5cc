@@ -33,7 +33,7 @@ app.use(cookieParser());
 app.use(session({
   secret: config.secret,
   key: config.key,
-  resave: false, //don't save session if unmodified
+  resave: false,//don't save session if unmodified
   saveUninitialized: false, // don't create session until something stored
   cookie: {
     maxAge: 1000 * 60 * 60 * 24 * config.cookie_day
