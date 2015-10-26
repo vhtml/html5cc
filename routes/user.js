@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
-var User = require('../models/User');
-var vv = require('../lib/vv');
+var User = require('../models/User.js');
+var vv = require('../lib/vv.js');
 
 //用户注册
 router.post('/register', function(req, res, next) {
@@ -52,7 +52,7 @@ router.post('/login', function(req, res, next) {
 				return vv.retServerError(err, res);
 			}
 			res.json(vv.parse(0, {
-				user: vv.getUser(user)
+				user: user
 			}));
 		});
 	});
@@ -67,6 +67,28 @@ router.get('/logout', function(req, res, next) {
 			return vv.retServerError(err, res);
 		}
 		res.json(vv.parse(0));
+	});
+});
+
+//用户主页
+router.get('/home', function(req, res, next) {
+	next();
+});
+router.get('/home/:reqUserId', function(req, res, next) {
+	var reqUserId = req.params.reqUserId;
+	User.getUserById(reqUserId, function(err, reqUser) {
+		if (err) {
+			console.log('get user error' + err);
+			return;
+		}
+		if (!reqUser) {
+			next();
+			return;
+		}
+		res.render('user_home', {
+			title: reqUser.nickname+' - 个人空间',
+			reqUser: reqUser
+		});
 	});
 });
 

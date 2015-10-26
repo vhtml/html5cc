@@ -12,11 +12,15 @@ var user = require('./routes/user');
 var rss = require('./routes/rss');
 var config = require('./config');
 
+require('./lib/console.js');
+
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+var template = require('./lib/template.js');
+app.engine('.html', template.__express);
+app.set('view engine', 'html');
+
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -28,7 +32,8 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 app.use(session({
   secret: config.secret,
-  resave: false,//don't save session if unmodified
+  key: config.key,
+  resave: false, //don't save session if unmodified
   saveUninitialized: false, // don't create session until something stored
   cookie: {
     maxAge: 1000 * 60 * 60 * 24 * config.cookie_day
@@ -40,10 +45,19 @@ app.use(session({
 }));
 app.use('/static', express.static(path.join(__dirname, 'public')));
 
+
+//路由前拦截设置
+app.use(function(req, res, next){
+  res.locals.user = null;
+  if(req.session.user){
+    res.locals.user = req.session.user;
+  }
+  next();
+});
 //路由
 app.use('/', routes);
 app.use('/user', user);
-app.use('/rss',rss);
+app.use('/rss', rss);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

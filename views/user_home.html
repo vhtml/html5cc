@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>{{title}}</title>
+</head>
+<body>
+	<h1>{{reqUser.nickname}}的个人空间</h1>
+	<p>当前登录用户：{{user.nickname}}</p>
+	{{if user._id == reqUser._id}}
+	<ul>
+		<li></li>
+		<li></li>
+		<li></li>
+	</ul>
+	<h3>添加订阅：</h3>
+	<form action="">
+		<input type="text" name="rssLink" id="rssLink">
+		<input type="submit" value="订阅">
+	</form>
+	{{/if}}
+</body>
+</html>

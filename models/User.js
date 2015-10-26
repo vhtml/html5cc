@@ -24,7 +24,11 @@ var UserSchema = new Schema({
 		type: Number,
 		default: 0
 	}, //用户角色，权限级别
-	gender: String, //性别
+	gender: { //性别
+		type: String,
+		enum: ['0', '1', '2'], //0，未知；1，男；2，女
+		default: '0'
+	},
 	birth: Date,
 	signature: String, //个性签名
 	meta: {
@@ -53,7 +57,6 @@ function encrypt(val) {
 
 //进行存储前验证
 UserSchema.pre('save', function(next) {
-	console.log(this);
 	//处理邮箱
 	if (!/^[a-zA-Z0-9]([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9]{2,3}){1,2})$/.test(this.email)) {
 		return next(new Error('邮箱格式错误'));
@@ -111,18 +114,38 @@ UserDAO.prototype.verifyUser = function(userJson, cb) {
 	}, function(err, user) {
 		if (err) {
 			cb(err);
-		} else {
-			if (!user) {
-				cb(null, null);
-			} else {
-				user.comparePassword(userJson.password, function(err, isMatch) {
-					if (err) {
-						cb(err);
-					} else {
-						cb(null, isMatch, user);
-					}
-				});
-			}
+			return;
 		}
+		if (!user) {
+			cb(null, null);
+			return;
+		} 
+		user.comparePassword(userJson.password, function(err, isMatch) {
+			if (err) {
+				cb(err);
+			} else {
+				cb(null, isMatch, user);
+			}
+		});
+	});
+};
+
+UserDAO.prototype.getAllUser = function(cb) {
+	User.find({}, '-password', function(err, users) {
+		if (err) {
+			cb(err);
+			return;
+		} 
+		cb(null, users);
+	});
+};
+
+UserDAO.prototype.getUserById = function(userId, cb){
+	User.findById(userId, '-password', function(err, user){
+		if (err) {
+			cb(err);
+			return;
+		} 
+		cb(null, user);
 	});
 };

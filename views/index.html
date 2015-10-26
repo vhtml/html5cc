@@ -6,7 +6,11 @@
 	<link rel="stylesheet" href="/static/styles/core.css">
 </head>
 <body>
-
+{{if user}}
+	已登录
+{{else}}
+	未登录
+{{/if}}
 <form action="/user/register" method="post">
 	<input type="text" name="email" value="">
 	<input type="password" name="password" value="">
@@ -19,7 +23,13 @@
 	<input type="password" name="password" value="">
 	<input type="submit" value="登录">
 </form>
-
+{{if users && users.length > 0}}
+<ul class="user-list">
+	{{each users as user i}}
+	<li><a href="/user/{{user.id}}">{{user.nickname}}</a></li>
+	{{/each}}
+</ul>
+{{/if}}
 <script src="/static/vendor/jquery-2.1.4.min.js"></script>
 <script src="/static/scripts/main.js"></script>
 </body>

@@ -9,7 +9,7 @@ var RssSchema = new Schema({
 		required: true
 	},
 	category: [{
-		title: {
+		title: { //default 我的订阅
 			type: String,
 			unique: true,
 			required: true,
@@ -27,6 +27,8 @@ var RssSchema = new Schema({
 			rssLink: String
 		}]
 	}]
+},{
+	versionKey: false
 });
 
 RssSchema.pre('save', function(next) {
@@ -35,17 +37,14 @@ RssSchema.pre('save', function(next) {
 });
 
 RssSchema.statics = {
-	findByUserId: function(userId) {
-
-	}
+	
 };
 
-var Rss = new mongoose.model('Rss', RssSchema);
+var Rss = mongoose.model('Rss', RssSchema);
 var RssDAO = function() {};
 module.exports = new RssDAO();
 
 RssDAO.prototype.save = function(rssJson, cb) {
-	var newRss = new Rss(rssJson);
 	Rss.findOne({
 		userId: rssJson.userId
 	}, function(err, rss) {
@@ -53,6 +52,7 @@ RssDAO.prototype.save = function(rssJson, cb) {
 			cb(err);
 		} else {
 			if (!rss) {
+				var newRss = new Rss(rssJson);
 				newRss.save(function(err) {
 					console.log('save rss:' + err);
 					cb(err);
@@ -71,7 +71,7 @@ RssDAO.prototype.getRssByUserId = function(userId){
 		if (err) {
 			cb(err);
 		} else {
-			cb(null, res ? res.category : {});
+			cb(null, res);
 		}
 	});
 };
