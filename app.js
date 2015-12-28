@@ -12,8 +12,6 @@ var user = require('./routes/user');
 var rss = require('./routes/rss');
 var config = require('./config');
 
-require('./lib/console.js');
-
 var app = express();
 
 // view engine setup

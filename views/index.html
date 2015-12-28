@@ -26,7 +26,7 @@
 {{if users && users.length > 0}}
 <ul class="user-list">
 	{{each users as user i}}
-	<li><a href="/user/{{user.id}}">{{user.nickname}}</a></li>
+	<li><a href="/user/home/{{user.id}}">{{user.nickname}}</a>  <a href="/user/delete?user={{user.id}}">删除</a></li>
 	{{/each}}
 </ul>
 {{/if}}

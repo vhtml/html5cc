@@ -1,13 +1,15 @@
 var express = require('express');
 var router = express.Router();
+var async = require('async');
 var User = require('../models/User.js');
+var Rss = require('../models/Rss.js');
 var vv = require('../lib/vv.js');
 
 //用户注册
 router.post('/register', function(req, res, next) {
 	console.log('register:' + req.body);
 	var json = req.body;
-	User.save(json, function(err, isExist) {
+	User.save(json, function(err, isExist, userId) {
 		if (err) {
 			return vv.retServerError(err, res);
 		}
@@ -18,7 +20,10 @@ router.post('/register', function(req, res, next) {
 			}));
 			return;
 		}
-		res.json(vv.parse(0));
+		//注册成功，补充完整用户必备信息表
+		Rss.setDefault(userId, function() {
+			res.json(vv.parse(0));
+		});
 	});
 });
 
@@ -70,26 +75,87 @@ router.get('/logout', function(req, res, next) {
 	});
 });
 
+//彻底删除用户
+router.post('/remove', function(req, res, next) {
+	var currentUser = req.session.user;
+	if (currentUser.role === 0) {
+		var userId = req.body.user;
+		if (userId) {
+			User.removeUser(userId, function(err) {
+				if (err) {
+					return vv.retServerError(err, res);
+				} else {
+					res.json(vv.parse(0));
+				}
+			});
+		} else {
+			res.json(vv.parse({
+				code: 60001,
+				message: 'args is incorrect'
+			}));
+		}
+	} else {
+		next();
+	}
+});
+
+//普通删除用户
+router.post('/delete', function(req, res, next) {
+	var currentUser = req.session.user;
+	if (currentUser.role === 0) {
+		var userId = req.body.user;
+		if (userId) {
+			User.delUser(userId, function(err) {
+				if (err) {
+					return vv.retServerError(err, res);
+				} else {
+					res.json(vv.parse(0));
+				}
+			});
+		} else {
+			res.json(vv.parse({
+				code: 60001,
+				message: 'args is incorrect'
+			}));
+		}
+	} else {
+		next();
+	}
+});
+
 //用户主页
 router.get('/home', function(req, res, next) {
-	next();
+	var user = req.session.user;
+	if (user) {
+		var userId = user._id;
+		res.redirect('/user/home/' + userId);
+		return;
+	}
+	res.redirect('/');
 });
-router.get('/home/:reqUserId', function(req, res, next) {
-	var reqUserId = req.params.reqUserId;
-	User.getUserById(reqUserId, function(err, reqUser) {
-		if (err) {
-			console.log('get user error' + err);
-			return;
+router.get('/home/:hostUserId', function(req, res, next) {
+	var hostUserId = req.params.hostUserId;
+	async.series({
+		hostUser: function(cb) {
+			User.getUserById(hostUserId, function(err, hostUser) {
+				cb(err, hostUser);
+			});
+		},
+		rss: function(cb) {
+			//查询该用户RSS分类
+			Rss.getRssByUserId(hostUserId, function(err, rss) {
+				cb(err, rss);
+			});
 		}
-		if (!reqUser) {
-			next();
-			return;
-		}
+	}, function(err, results) {
+		if (err) next(err);
 		res.render('user_home', {
-			title: reqUser.nickname+' - 个人空间',
-			reqUser: reqUser
+			title: results.hostUser.nickname + ' - 个人空间',
+			hostUser: results.hostUser,
+			rss: results.rss
 		});
 	});
+
 });
 
 module.exports = router;

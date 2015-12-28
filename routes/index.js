@@ -3,7 +3,7 @@ var router = express.Router();
 var User = require('../models/User.js');
 
 router.get('/', function(req, res, next) {
-	User.getAllUser(function(err, users){
+	User.getAllValidUser(function(err, users){
 		if (err) {
 			console.log(err);
 		}

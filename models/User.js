@@ -1,6 +1,7 @@
 var mongoose = require('./mongodb').mongoose;
 var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt');
+var Rss = require('./Rss');
 
 
 var UserSchema = new Schema({
@@ -15,6 +16,10 @@ var UserSchema = new Schema({
 		type: String,
 		required: true
 	},
+	isShow: {
+		type: Boolean,
+		default: true
+	},
 	nickname: {
 		type: String,
 		unique: true,
@@ -22,7 +27,7 @@ var UserSchema = new Schema({
 	}, //昵称
 	role: {
 		type: Number,
-		default: 0
+		default: 9 //0为最高级别，9为普通级别
 	}, //用户角色，权限级别
 	gender: { //性别
 		type: String,
@@ -45,8 +50,6 @@ var UserSchema = new Schema({
 		contribution: Number, //贡献值
 		onlineTime: Number, //在线时长 
 	}
-}, {
-	versionKey: false
 });
 
 function encrypt(val) {
@@ -98,8 +101,12 @@ UserDAO.prototype.save = function(userJson, cb) {
 		} else {
 			if (!user) {
 				newUser.save(function(err) {
-					console.log('save user:' + err);
-					cb(err);
+					if (err) {
+						console.log('save user:' + err);
+						cb(err);
+					} else {
+						cb(null, false, newUser.get('id'));
+					}
 				});
 			} else {
 				cb(null, true);
@@ -119,7 +126,7 @@ UserDAO.prototype.verifyUser = function(userJson, cb) {
 		if (!user) {
 			cb(null, null);
 			return;
-		} 
+		}
 		user.comparePassword(userJson.password, function(err, isMatch) {
 			if (err) {
 				cb(err);
@@ -135,17 +142,61 @@ UserDAO.prototype.getAllUser = function(cb) {
 		if (err) {
 			cb(err);
 			return;
-		} 
+		}
 		cb(null, users);
 	});
 };
 
-UserDAO.prototype.getUserById = function(userId, cb){
-	User.findById(userId, '-password', function(err, user){
+UserDAO.prototype.getAllValidUser = function(cb) {
+	User.find({
+		isShow: true
+	}, '-password', function(err, users) {
 		if (err) {
 			cb(err);
 			return;
-		} 
+		}
+		cb(null, users);
+	});
+};
+
+
+UserDAO.prototype.getUserById = function(userId, cb) {
+	User.findById(userId, '-password', function(err, user) {
+		if (err) {
+			cb(err);
+			return;
+		}
 		cb(null, user);
+	});
+};
+
+//删除用户，还要清清除其相关的表结构，并且清除session，用于彻底的删除用户
+UserDAO.prototype.removeUser = function(userId, cb) {
+	User.remove({
+		_id: userId
+	}, function(err, result) {
+		if (err) {
+			cb(err);
+			return;
+		}
+		Rss.removeByUserId(userId, function(err) {
+			cb(err);
+		});
+	});
+};
+//隐藏用户，用于一般的删除用户
+UserDAO.prototype.delUser = function(userId, cb) {
+	User.update({
+		_id: userId
+	}, {
+		$set: {
+			isShow: false
+		}
+	}, function(err, raw) {
+		if (err) {
+			cb(err);
+			return;
+		}
+		cb(null, raw);
 	});
 };

@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var RssChannel = require('../models/RssChannel.js');
+var Rss = require('../models/Rss.js');
 var vv = require('../lib/vv.js');
 
 
@@ -32,14 +33,9 @@ router.get('/', function(req, res, next) {
 	}
 });
 
-//用户订阅列表
-router.get('/:userId', function(req, res, next) {
-
-});
-
 //添加订阅
 router.post('/add', function(req, res, next){
-	var user = req.locals.user;
+	var user = req.session.user;
 	var rssLink = req.body.rssLink;
 	if(!user){
 		res.json(vv.parse({
@@ -49,7 +45,14 @@ router.post('/add', function(req, res, next){
 		return;
 	}
 	//存储Rss
+
 });
+
+//用户订阅列表
+router.get('/list/:userId', function(req, res, next) {
+
+});
+
 
 module.exports = router;
 

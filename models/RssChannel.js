@@ -32,8 +32,6 @@ var RssChannelSchema = new Schema({
 			default: Date.now
 		}
 	}
-},{
-	versionKey: false
 });
 
 RssChannelSchema.statics = {

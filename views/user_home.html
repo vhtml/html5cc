@@ -5,17 +5,22 @@
 	<title>{{title}}</title>
 </head>
 <body>
-	<h1>{{reqUser.nickname}}的个人空间</h1>
-	<p>当前登录用户：{{user.nickname}}</p>
-	{{if user._id == reqUser._id}}
+	<h1>{{hostUser.nickname}}的个人空间</h1>
+	<p>当前登录用户：{{if user}}{{user.nickname}}{{else}}匿名{{/if}}</p>
 	<ul>
 		<li></li>
 		<li></li>
 		<li></li>
 	</ul>
+	{{if user && user._id == hostUser._id}}
 	<h3>添加订阅：</h3>
-	<form action="">
+	<form action="/rss/add" method="post">
 		<input type="text" name="rssLink" id="rssLink">
+		<select name="rssCategory" id="rssCategory">
+			{{each rss.category as cate}}
+			<option value="{{cate.id}}">{{cate.title}}</option>
+			{{/each}}
+		</select>
 		<input type="submit" value="订阅">
 	</form>
 	{{/if}}

@@ -1,0 +1,17 @@
+{
+	"name": "html5cc",
+    "script": "./bin/www",
+    "cwd": "/Users/yc/www/github/html5cc",
+    "exec_interpreter": "/usr/local/bin/node",
+    "log_date_format": "YYYY-MM-DD HH:mm:SS",
+    "merge_logs": true,
+    "watch": true,
+    "ignore_watch": [
+            "node_modules"
+    ],
+    "env": {
+            "NODE_ENV": "production",
+            "PORT": 5000
+    }
+
+}
