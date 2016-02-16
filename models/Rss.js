@@ -13,33 +13,25 @@ var RssSchema = new Schema({
 			required: true,
 			trim: true
 		},
-		alias: {
-			type: String,
-			trim: true,
-			lowercase: true
-		},
 		list: [{
-			title: String,
-			rssLink: String
-		}]
-	}],
-	meta: {
-		defaultCategory: {
-			type: String
+			rssLink: String,
+			title: String
+		}],
+		isDefault: {
+			type: Boolean,
+			default: false
 		}
-	}
+	}]
 });
 
 var rssDefault = {
 	userId: null,
 	category: [{
 		title: '我的订阅',
-		alias: 'default',
-		list: []
+		list: [],
+		isDefault: true
 	}],
-	meta: {
-		defaultCategory: 'default'
-	}
+	defaultCategory: '我的订阅'
 };
 
 
@@ -72,8 +64,51 @@ RssDAO.prototype.setDefault = function(userId, cb) {
 	});
 };
 
-RssDAO.prototype.update = function(rssJson, cb) {
+RssDAO.prototype.addRss = function(rssJson, cb) {
+	Rss.update({
+		userId: rssJson.userId,
+		"category._id": rssJson.rssCategory,
+		"category.list.rssLink": {
+			"$ne": rssJson.rss.rssLink
+		}
+	}, {
+		$push: {
+			"category.$.list": rssJson.rss
+		}
+	}, function(err, result) {
+		cb(err, result);
+	});
+};
 
+RssDAO.prototype.addCategory = function(rssJson, cb) {
+	Rss.update({
+		userId: rssJson.userId,
+		'category.title': {
+			"$ne": rssJson.newCategory
+		}
+	}, {
+		$push: {
+			"category": {
+				title: rssJson.newCategory,
+				list: []
+			}
+		}
+	}, function(err, result) {
+		cb(err, result);
+	});
+};
+
+RssDAO.prototype.removeRssItem = function(userId, cb) {
+	Rss.update({
+		userId: rssJson.userId,
+		"category._id": rssJson.rssCategory
+	}, {
+		$pull: {
+			"category.$.list": {
+				rssLink: rssJson.rssLink
+			}
+		}
+	});
 };
 
 RssDAO.prototype.removeByUserId = function(userId, cb) {

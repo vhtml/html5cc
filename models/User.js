@@ -131,7 +131,9 @@ UserDAO.prototype.verifyUser = function(userJson, cb) {
 			if (err) {
 				cb(err);
 			} else {
-				cb(null, isMatch, user);
+				var cbUser = JSON.parse(JSON.stringify(user));
+				delete cbUser.password;
+				cb(null, isMatch, cbUser);
 			}
 		});
 	});

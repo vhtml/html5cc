@@ -155,7 +155,26 @@ router.get('/home/:hostUserId', function(req, res, next) {
 			rss: results.rss
 		});
 	});
+});
+
+//用户RSS分类目录添加
+router.post('/rsscate/add', function(req, res, next){
 
 });
+//用户RSS分类目录删除
+router.post('/rsscate/delete', function(req, res, next){
+
+});
+//用户RSS分类目录名称修改
+router.post('/rsscate/modify', function(req, res, next){
+
+});
+
+//用户在分类目录下添加订阅
+router.post('/rsscate/new', function(req, res, next){
+	var cateId = req.query.category;
+});
+
+
 
 module.exports = router;

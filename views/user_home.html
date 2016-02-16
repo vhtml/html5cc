@@ -7,11 +7,14 @@
 <body>
 	<h1>{{hostUser.nickname}}的个人空间</h1>
 	<p>当前登录用户：{{if user}}{{user.nickname}}{{else}}匿名{{/if}}</p>
-	<ul>
-		<li></li>
-		<li></li>
-		<li></li>
-	</ul>
+	{{each rss.category as cate}}
+		<dl>
+			<dt>{{cate.title}}</dt>
+			{{each cate.list as rss}}
+			<dd>{{rss.title}}</dd>
+			{{/each}}
+		</dl>
+	{{/each}}
 	{{if user && user._id == hostUser._id}}
 	<h3>添加订阅：</h3>
 	<form action="/rss/add" method="post">
@@ -22,6 +25,10 @@
 			{{/each}}
 		</select>
 		<input type="submit" value="订阅">
+	</form>
+	<form action="/rss/addctg" method="post">
+		<input type="text" name="newCategory" id="newCategory">
+		<input type="submit" value="添加订阅分类">
 	</form>
 	{{/if}}
 </body>
